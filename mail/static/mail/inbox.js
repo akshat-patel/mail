@@ -26,7 +26,22 @@ function compose_email() {
     document.querySelector("#compose-body").value = "";
 
     document.querySelector("form").onsubmit = function () {
-        document.querySelector("h2").style.color = "red";
+        const recipients = document.querySelector("#compose-recipients").value;
+        const subject = document.querySelector("#compose-subject").value;
+        const body = document.querySelector("#compose-body").value;
+
+        fetch("/emails", {
+            method: "POST",
+            body: JSON.stringify({
+                recipients: recipients,
+                subject: subject,
+                body: body,
+            }),
+        })
+            .then((response) => response.json())
+            .then((result) => {
+                console.log(result);
+            });
 
         return false;
     };
