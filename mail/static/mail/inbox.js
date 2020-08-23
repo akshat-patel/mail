@@ -43,6 +43,7 @@ function compose_email() {
                 console.log(result);
             });
 
+        load_mailbox("sent");
         return false;
     };
 }
