@@ -20,10 +20,42 @@ function compose_email() {
     document.querySelector("#emails-view").style.display = "none";
     document.querySelector("#compose-view").style.display = "block";
 
+    const recipients = document.querySelector("#compose-recipients");
+    const subject = document.querySelector("#compose-subject");
+    const body = document.querySelector("#compose-body");
+    const submit = document.querySelector("#submit");
+
     //   Clear out composition fields
-    document.querySelector("#compose-recipients").value = "";
-    document.querySelector("#compose-subject").value = "";
-    document.querySelector("#compose-body").value = "";
+    recipients.value = "";
+    subject.value = "";
+    body.value = "";
+
+    submit.disabled = true;
+
+    // Make sure that all fields are filled out before submitting
+    recipients.onkeyup = () => {
+        if (recipients.value.length > 0) {
+            submit.disabled = false;
+        } else {
+            submit.disabled = true;
+        }
+    };
+
+    subject.onkeyup = () => {
+        if (subject.value.length > 0) {
+            submit.disabled = false;
+        } else {
+            submit.disabled = true;
+        }
+    };
+
+    body.onkeyup = () => {
+        if (body.value.length > 0) {
+            submit.disabled = false;
+        } else {
+            submit.disabled = true;
+        }
+    };
 
     document.querySelector("form").onsubmit = function () {
         const recipients = document.querySelector("#compose-recipients").value;
@@ -57,4 +89,8 @@ function load_mailbox(mailbox) {
     document.querySelector("#emails-view").innerHTML = `<h3>${
         mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
     }</h3>`;
+
+    if (mailbox === "sent") {
+        document.querySelector("#emails-view").innerHTML = ``;
+    }
 }
