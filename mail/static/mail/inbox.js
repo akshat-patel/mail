@@ -91,6 +91,23 @@ function load_mailbox(mailbox) {
     }</h3>`;
 
     if (mailbox === "sent") {
-        document.querySelector("#emails-view").innerHTML = ``;
+        fetch("/emails/sent")
+            .then((response) => response.json())
+            .then((emails) => {
+                console.log(emails);
+                for (var email of emails) {
+                    document.querySelector("#emails-view").innerHTML += `
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-4">${email.recipients}</div>
+                                <div class="col-4">${email.subject}</div>
+                                <div class="col-4">${email.timestamp}</div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }
+            });
     }
 }
