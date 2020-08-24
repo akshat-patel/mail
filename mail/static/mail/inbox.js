@@ -30,33 +30,6 @@ function compose_email() {
     subject.value = "";
     body.value = "";
 
-    submit.disabled = true;
-
-    // Make sure that all fields are filled out before submitting
-    recipients.onkeyup = () => {
-        if (recipients.value.length > 0) {
-            submit.disabled = false;
-        } else {
-            submit.disabled = true;
-        }
-    };
-
-    subject.onkeyup = () => {
-        if (subject.value.length > 0) {
-            submit.disabled = false;
-        } else {
-            submit.disabled = true;
-        }
-    };
-
-    body.onkeyup = () => {
-        if (body.value.length > 0) {
-            submit.disabled = false;
-        } else {
-            submit.disabled = true;
-        }
-    };
-
     document.querySelector("form").onsubmit = function () {
         const recipients = document.querySelector("#compose-recipients").value;
         const subject = document.querySelector("#compose-subject").value;
