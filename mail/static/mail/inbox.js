@@ -80,8 +80,13 @@ function load_mailbox(mailbox) {
                     </div>
                     `;
                 } else if (mailbox === "inbox") {
+                    //assume the email is unread
+                    let readBgColor = "light";
+                    if (email.read === true) {
+                        readBgColor = "secondary";
+                    }
                     document.querySelector("#emails-view").innerHTML += `
-                    <div class="card bg-light">
+                    <div class="card bg-${readBgColor}">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-4">From: ${email.sender}</div>
@@ -93,8 +98,14 @@ function load_mailbox(mailbox) {
                     `;
                 } else {
                     //mailbox === "archive"
+
+                    //assume the email is unread
+                    let readBgColor = "light";
+                    if (email.read === true) {
+                        readBgColor = "secondary";
+                    }
                     document.querySelector("#emails-view").innerHTML += `
-                    <div class="card bg-light">
+                    <div class="card bg-${readBgColor}">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-4">From: ${email.sender}</div>
