@@ -23,7 +23,6 @@ function compose_email() {
     const recipients = document.querySelector("#compose-recipients");
     const subject = document.querySelector("#compose-subject");
     const body = document.querySelector("#compose-body");
-    const submit = document.querySelector("#submit");
 
     //   Clear out composition fields
     recipients.value = "";
@@ -46,9 +45,9 @@ function compose_email() {
             .then((response) => response.json())
             .then((result) => {
                 console.log(result);
+                load_mailbox("sent");
             });
 
-        load_mailbox("sent");
         return false;
     };
 }
@@ -63,17 +62,42 @@ function load_mailbox(mailbox) {
         mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
     }</h3>`;
 
-    if (mailbox === "sent") {
-        fetch("/emails/sent")
-            .then((response) => response.json())
-            .then((emails) => {
-                console.log(emails);
-                for (var email of emails) {
+    fetch(`/emails/${mailbox}`)
+        .then((response) => response.json())
+        .then((emails) => {
+            console.log(emails);
+            for (var email of emails) {
+                if (mailbox === "sent") {
                     document.querySelector("#emails-view").innerHTML += `
                     <div class="card bg-light">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-4">${email.recipients}</div>
+                                <div class="col-4">To: ${email.recipients}</div>
+                                <div class="col-4">${email.subject}</div>
+                                <div class="col-4">${email.timestamp}</div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                } else if (mailbox === "inbox") {
+                    document.querySelector("#emails-view").innerHTML += `
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-4">From: ${email.sender}</div>
+                                <div class="col-4">${email.subject}</div>
+                                <div class="col-4">${email.timestamp}</div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                } else {
+                    //mailbox === "archive"
+                    document.querySelector("#emails-view").innerHTML += `
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-4">From: ${email.sender}</div>
                                 <div class="col-4">${email.subject}</div>
                                 <div class="col-4">${email.timestamp}</div>
                             </div>
@@ -81,6 +105,6 @@ function load_mailbox(mailbox) {
                     </div>
                     `;
                 }
-            });
-    }
+            }
+        });
 }
