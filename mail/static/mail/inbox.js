@@ -66,7 +66,7 @@ function load_mailbox(mailbox) {
         .then((response) => response.json())
         .then((emails) => {
             console.log(emails);
-            for (var email of emails) {
+            emails.forEach((email) => {
                 if (mailbox === "sent") {
                     document.querySelector("#emails-view").innerHTML += `
                     <div class="card bg-light">
@@ -86,7 +86,7 @@ function load_mailbox(mailbox) {
                         readBgColor = "secondary";
                     }
                     document.querySelector("#emails-view").innerHTML += `
-                    <div class="card bg-${readBgColor}">
+                    <div class="card bg-${readBgColor} mt-3">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-4">From: ${email.sender}</div>
@@ -108,7 +108,7 @@ function load_mailbox(mailbox) {
                     <div class="card bg-${readBgColor}">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-4">From: ${email.sender}</div>
+                                <div class="col-4">rom: ${email.sender}</div>
                                 <div class="col-4">${email.subject}</div>
                                 <div class="col-4">${email.timestamp}</div>
                             </div>
@@ -116,6 +116,11 @@ function load_mailbox(mailbox) {
                     </div>
                     `;
                 }
-            }
+            });
+            document.querySelectorAll(".card").forEach((card) => {
+                card.onclick = () => {
+                    card.className = "card bg-danger";
+                };
+            });
         });
 }
