@@ -19,6 +19,7 @@ function compose_email() {
     // Show compose view and hide other views
     document.querySelector("#emails-view").style.display = "none";
     document.querySelector("#compose-view").style.display = "block";
+    document.querySelector("#view-email").style.display = "none";
 
     const recipients = document.querySelector("#compose-recipients");
     const subject = document.querySelector("#compose-subject");
@@ -56,6 +57,7 @@ function load_mailbox(mailbox) {
     // Show the mailbox and hide other views
     document.querySelector("#emails-view").style.display = "block";
     document.querySelector("#compose-view").style.display = "none";
+    document.querySelector("#view-email").style.display = "none";
 
     // Show the mailbox name
     document.querySelector("#emails-view").innerHTML = `<h3>${
@@ -69,7 +71,7 @@ function load_mailbox(mailbox) {
             emails.forEach((email) => {
                 if (mailbox === "sent") {
                     document.querySelector("#emails-view").innerHTML += `
-                    <div class="card bg-light">
+                    <div class="card bg-light mt-3">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-4">To: ${email.recipients}</div>
@@ -105,7 +107,7 @@ function load_mailbox(mailbox) {
                         readBgColor = "secondary";
                     }
                     document.querySelector("#emails-view").innerHTML += `
-                    <div class="card bg-${readBgColor}">
+                    <div class="card bg-${readBgColor} mt-3">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-4">rom: ${email.sender}</div>
@@ -119,7 +121,7 @@ function load_mailbox(mailbox) {
             });
             document.querySelectorAll(".card").forEach((card) => {
                 card.onclick = () => {
-                    card.className = "card bg-danger";
+                    console.log(card);
                 };
             });
         });
