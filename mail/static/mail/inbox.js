@@ -62,16 +62,15 @@ function load_mailbox(mailbox) {
     // Show the mailbox name
     document.querySelector("#emails-view").innerHTML = `<h3>${
         mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
-    }</h3>`;
+        }</h3>`;
 
     fetch(`/emails/${mailbox}`)
         .then((response) => response.json())
         .then((emails) => {
-            console.log(emails);
             emails.forEach((email) => {
                 if (mailbox === "sent") {
                     document.querySelector("#emails-view").innerHTML += `
-                    <div class="card bg-light mt-3">
+                    <div id="${email.id}" class="card bg-light mt-3">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-4">To: ${email.recipients}</div>
@@ -88,7 +87,7 @@ function load_mailbox(mailbox) {
                         readBgColor = "secondary";
                     }
                     document.querySelector("#emails-view").innerHTML += `
-                    <div class="card bg-${readBgColor} mt-3">
+                    <div id="${email.id}" class="card bg-${readBgColor} mt-3">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-4">From: ${email.sender}</div>
@@ -107,10 +106,10 @@ function load_mailbox(mailbox) {
                         readBgColor = "secondary";
                     }
                     document.querySelector("#emails-view").innerHTML += `
-                    <div class="card bg-${readBgColor} mt-3">
+                    <div id="${email.id}" class="card bg-${readBgColor} mt-3">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-4">rom: ${email.sender}</div>
+                                <div class="col-4">From: ${email.sender}</div>
                                 <div class="col-4">${email.subject}</div>
                                 <div class="col-4">${email.timestamp}</div>
                             </div>
@@ -119,10 +118,31 @@ function load_mailbox(mailbox) {
                     `;
                 }
             });
+            //uncaught (in promise) syntaxerror: unexpected token <  in JSON at  position  0 promise.then (async) card.onclick
             document.querySelectorAll(".card").forEach((card) => {
+                console.log(card.id);
                 card.onclick = () => {
-                    console.log(card);
-                };
+                    fetch(`/emails/${card.id}`)
+                        .then((response) => response.json())
+                        .then((email) => {
+                            console.log(email);
+                            document.querySelector("#emails-view").style.display = "none";
+                            document.querySelector("#compose-view").style.display = "none";
+                            document.querySelector("#view-email").style.display = "block";
+
+                            //show sender, recipients, subject, timestamp, and body
+                            document.querySelector('#view-email').innerHTML = `
+                                <div class="jumbotron">
+                                    <h1 class="display-4">${email.subject}</h1>
+                                    <p class="lead">${email.body}</p>
+                                    <hr class="my-4">
+                                    <p class="font-weight-light">From: ${email.sender}</p>
+                                    <p class="font-weight-light">To: ${email.recipients}</p>
+                                    <p class="font-weight-light">Sent on ${email.timestamp}</p>
+                                </div>
+                            `
+                        });
+                }
             });
         });
 }
