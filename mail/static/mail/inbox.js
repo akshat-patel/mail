@@ -118,14 +118,20 @@ function load_mailbox(mailbox) {
                     `;
                 }
             });
-            //uncaught (in promise) syntaxerror: unexpected token <  in JSON at  position  0 promise.then (async) card.onclick
             document.querySelectorAll(".card").forEach((card) => {
                 console.log(card.id);
                 card.onclick = () => {
                     fetch(`/emails/${card.id}`)
                         .then((response) => response.json())
                         .then((email) => {
-                            console.log(email);
+                            if (!email.read) {
+                                fetch(`/emails/${email.id}`, {
+                                    method: 'PUT',
+                                    body: JSON.stringify({
+                                        read: true
+                                    })
+                                })
+                            }
                             document.querySelector("#emails-view").style.display = "none";
                             document.querySelector("#compose-view").style.display = "none";
                             document.querySelector("#view-email").style.display = "block";
@@ -139,8 +145,21 @@ function load_mailbox(mailbox) {
                                     <p class="font-weight-light">From: ${email.sender}</p>
                                     <p class="font-weight-light">To: ${email.recipients}</p>
                                     <p class="font-weight-light">Sent on ${email.timestamp}</p>
+                                    <a id="backButton" class="badge badge-light">Back</a>
                                 </div>
-                            `
+                            `;
+
+                            document.querySelector('#backButton').addEventListener('click', function () {
+                                if (mailbox === "inbox") {
+                                    load_mailbox("inbox");
+                                }
+                                else if (mailbox === "sent") {
+                                    load_mailbox("sent");
+                                }
+                                else {
+                                    load_mailbox("archive");
+                                }
+                            });
                         });
                 }
             });
