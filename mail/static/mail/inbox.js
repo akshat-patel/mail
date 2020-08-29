@@ -67,7 +67,9 @@ function load_mailbox(mailbox) {
     fetch(`/emails/${mailbox}`)
         .then((response) => response.json())
         .then((emails) => {
+            console.log(emails);
             emails.forEach((email) => {
+                console.log(email);
                 if (mailbox === "sent") {
                     document.querySelector("#emails-view").innerHTML += `
                     <div id="${email.id}" class="card bg-light mt-3">
@@ -80,7 +82,7 @@ function load_mailbox(mailbox) {
                         </div>
                     </div>
                     `;
-                } else if (mailbox === "inbox") {
+                } else if (mailbox === "inbox" && !email.archived) {
                     //assume the email is unread
                     let readBgColor = "light";
                     if (email.read === true) {
@@ -146,6 +148,7 @@ function load_mailbox(mailbox) {
                                     <p class="font-weight-light">To: ${email.recipients}</p>
                                     <p class="font-weight-light">Sent on ${email.timestamp}</p>
                                     <a id="backButton" class="badge badge-light">Back</a>
+                                    <a id="archiveButton" class="badge badge-light">Archive</a>
                                 </div>
                             `;
 
@@ -159,6 +162,18 @@ function load_mailbox(mailbox) {
                                 else {
                                     load_mailbox("archive");
                                 }
+                            });
+
+                            document.querySelector("#archiveButton").addEventListener('click', function () {
+
+                                fetch(`/emails/${email.id}`, {
+                                    method: 'PUT',
+                                    body: JSON.stringify({
+                                        archived: true
+                                    })
+                                })
+
+                                load_mailbox('inbox');
                             });
                         });
                 }
