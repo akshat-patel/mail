@@ -29,3 +29,7 @@ body {
 #archiveButton {
     cursor: pointer;
 }
+
+#reply {
+    cursor: pointer;
+}

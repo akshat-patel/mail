@@ -146,6 +146,7 @@ function load_mailbox(mailbox) {
                                     <p class="font-weight-light">Sent on ${email.timestamp}</p>
                                     <a id="backButton" class="badge badge-light">Back</a>
                                     <a id="archiveButton" class="badge badge-light">Archive</a>
+                                    <a id="reply" class="badge badge-light">Reply</a>
                                 </div>
                                 `;
                             } else if (mailbox === 'sent') {
@@ -172,6 +173,7 @@ function load_mailbox(mailbox) {
                                     <p class="font-weight-light">Sent on ${email.timestamp}</p>
                                     <a id="backButton" class="badge badge-light">Back</a>
                                     <a id="archiveButton" class="badge badge-light">Unarchive</a>
+                                    <a id="reply" class="badge badge-light">Reply</a>
                                 </div>
                                 `;
                             }
@@ -218,6 +220,39 @@ function load_mailbox(mailbox) {
                                         })
                                 }
                             });
+
+                            document.querySelector('#reply').onclick = () => {
+                                document.querySelector("#emails-view").style.display = "none";
+                                document.querySelector("#compose-view").style.display = "block";
+                                document.querySelector("#view-email").style.display = "none";
+
+                                document.querySelector('#compose-recipients').value = email.sender;
+                                if (!(email.subject).includes('Re: ')) {
+                                    document.querySelector('#compose-subject').value = `Re: ${email.subject}`;
+                                }
+                                document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote: ${email.body}`;
+
+                                document.querySelector("form").onsubmit = function () {
+                                    const recipients = document.querySelector("#compose-recipients").value;
+                                    const subject = document.querySelector("#compose-subject").value;
+                                    const body = document.querySelector("#compose-body").value;
+
+                                    fetch("/emails", {
+                                        method: "POST",
+                                        body: JSON.stringify({
+                                            recipients: recipients,
+                                            subject: subject,
+                                            body: body,
+                                        }),
+                                    })
+                                        .then((response) => response.json())
+                                        .then((result) => {
+                                            load_mailbox("sent");
+                                        });
+
+                                    return false;
+                                };
+                            };
                         });
                 }
             });
