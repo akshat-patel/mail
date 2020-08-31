@@ -45,7 +45,6 @@ function compose_email() {
         })
             .then((response) => response.json())
             .then((result) => {
-                console.log(result);
                 load_mailbox("sent");
             });
 
@@ -67,9 +66,7 @@ function load_mailbox(mailbox) {
     fetch(`/emails/${mailbox}`)
         .then((response) => response.json())
         .then((emails) => {
-            console.log(emails);
             emails.forEach((email) => {
-                console.log(email);
                 if (mailbox === "sent") {
                     document.querySelector("#emails-view").innerHTML += `
                     <div id="${email.id}" class="card bg-light mt-3">
@@ -121,7 +118,6 @@ function load_mailbox(mailbox) {
                 }
             });
             document.querySelectorAll(".card").forEach((card) => {
-                console.log(card.id);
                 card.onclick = () => {
                     fetch(`/emails/${card.id}`)
                         .then((response) => response.json())
@@ -139,7 +135,8 @@ function load_mailbox(mailbox) {
                             document.querySelector("#view-email").style.display = "block";
 
                             //show sender, recipients, subject, timestamp, and body
-                            document.querySelector('#view-email').innerHTML = `
+                            if (mailbox === 'inbox') {
+                                document.querySelector('#view-email').innerHTML = `
                                 <div class="jumbotron">
                                     <h1 class="display-4">${email.subject}</h1>
                                     <p class="lead">${email.body}</p>
@@ -150,8 +147,34 @@ function load_mailbox(mailbox) {
                                     <a id="backButton" class="badge badge-light">Back</a>
                                     <a id="archiveButton" class="badge badge-light">Archive</a>
                                 </div>
-                            `;
-
+                                `;
+                            } else if (mailbox === 'sent') {
+                                document.querySelector('#view-email').innerHTML = `
+                                <div class="jumbotron">
+                                    <h1 class="display-4">${email.subject}</h1>
+                                    <p class="lead">${email.body}</p>
+                                    <hr class="my-4">
+                                    <p class="font-weight-light">From: ${email.sender}</p>
+                                    <p class="font-weight-light">To: ${email.recipients}</p>
+                                    <p class="font-weight-light">Sent on ${email.timestamp}</p>
+                                    <a id="backButton" class="badge badge-light">Back</a>
+                                </div>
+                                `;
+                            } else {
+                                //mailbox === 'archive'
+                                document.querySelector('#view-email').innerHTML = `
+                                <div class="jumbotron">
+                                    <h1 class="display-4">${email.subject}</h1>
+                                    <p class="lead">${email.body}</p>
+                                    <hr class="my-4">
+                                    <p class="font-weight-light">From: ${email.sender}</p>
+                                    <p class="font-weight-light">To: ${email.recipients}</p>
+                                    <p class="font-weight-light">Sent on ${email.timestamp}</p>
+                                    <a id="backButton" class="badge badge-light">Back</a>
+                                    <a id="archiveButton" class="badge badge-light">Unarchive</a>
+                                </div>
+                                `;
+                            }
                             document.querySelector('#backButton').addEventListener('click', function () {
                                 if (mailbox === "inbox") {
                                     load_mailbox("inbox");
@@ -165,15 +188,35 @@ function load_mailbox(mailbox) {
                             });
 
                             document.querySelector("#archiveButton").addEventListener('click', function () {
+                                if (document.querySelector('#archiveButton').innerHTML === 'Unarchive') {
+                                    // const requestArchive = async(email.id) => {
+                                    //     const response = await fetch(`/emails/${email.id}`);
+                                    //     const json = await response.json();
+                                    //     console.log('async based');
+                                    //     console.log(json);
+                                    // }
 
-                                fetch(`/emails/${email.id}`, {
-                                    method: 'PUT',
-                                    body: JSON.stringify({
-                                        archived: true
+                                    // requestArchive();
+                                    fetch(`/emails/${email.id}`, {
+                                        method: 'PUT',
+                                        body: JSON.stringify({
+                                            archived: false
+                                        })
                                     })
-                                })
-
-                                load_mailbox('inbox');
+                                        .then((response) => {
+                                            load_mailbox('inbox');
+                                        })
+                                } else {
+                                    fetch(`/emails/${email.id}`, {
+                                        method: 'PUT',
+                                        body: JSON.stringify({
+                                            archived: true
+                                        })
+                                    })
+                                        .then((response) => {
+                                            load_mailbox('inbox');
+                                        })
+                                }
                             });
                         });
                 }
